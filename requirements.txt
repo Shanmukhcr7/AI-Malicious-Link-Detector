@@ -1,0 +1,6 @@
+Flask
+requests
+google-generativeai
+beautifulsoup4
+selenium
+webdriver-manager
