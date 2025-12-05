@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 AI Website Analyzer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            max-width: 700px;
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        }
+        .form-control {
+            height: 50px;
+            font-size: 18px;
+            border-radius: 8px;
+        }
+        .btn {
+            font-size: 18px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .loading i {
+            font-size: 40px;
+            color: #ffc107;
+            animation: spin 1.5s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            font-size: 18px;
+        }
+        .safe { color: #28a745; font-weight: bold; }
+        .warning { color: #ffc107; font-weight: bold; }
+        .danger { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container text-center">
+    <h2 class="mb-4"><i class="fas fa-shield-alt"></i> AI Website Analyzer</h2>
+    
+    <div class="input-group mb-3">
+        <input type="text" id="url" class="form-control" placeholder="Enter website URL..." required>
+        <button class="btn btn-warning" onclick="deepScan()">
+            <i class="fas fa-search"></i> Scan Now
+        </button>
+    </div>
+
+    <div class="loading">
+        <i class="fas fa-spinner"></i>
+        <p>Analyzing the link, please wait...</p>
+    </div>
+
+    <div id="results" class="result-box"></div>
+</div>
+
+<script>
+    function deepScan() {
+        let url = document.getElementById("url").value.trim();
+        if (!url) {
+            alert("Please enter a valid URL!");
+            return;
+        }
+
+        document.querySelector(".loading").style.display = "block";
+
+        let formData = new FormData();
+        formData.append("url", url);
+
+        fetch("/check", { method: "POST", body: formData })
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector(".loading").style.display = "none";
+
+            let resultHTML = `<h3>🔍 AI Analysis Results:</h3>
+                <p><b>🔗 Scanned URL:</b> ${data.url}</p>
+                <p><b>🤖 Gemini AI Analysis:</b> ${data.gemini_analysis}</p>
+                <h3 class="${data.final_status.includes("🚨") ? 'danger' : 'safe'}">${data.final_status}</h3>`;
+
+            document.getElementById("results").innerHTML = resultHTML;
+        });
+    }
+</script>
+
+</body>
+</html>
